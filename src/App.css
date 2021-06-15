@@ -7,3 +7,8 @@ A {
   text-decoration: none;
   color: black;
 }
+
+/* //makes padding margin and border not effecting containing size or overlapping */
+* {
+  box-sizing: border-box;
+}
