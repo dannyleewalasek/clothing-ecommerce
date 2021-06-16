@@ -1,7 +1,9 @@
-.sign-in {
-  width: 30vw;
+.sign-in-and-sign-up {
+  width: 80vw;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 30px auto;
 
   .title {
     margin: 10px 0;
