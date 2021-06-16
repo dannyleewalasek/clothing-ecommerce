@@ -6,16 +6,10 @@ import ShopPage from "./pages/shop/shop.component.jsx";
 import Header from "./components/header/header.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
+import { connect } from "react-redux";
+import { setCurrentUser } from "./redux/user/user.actions";
 
 class App extends React.Component {
-  constructor() {
-    super();
-
-    this.state = {
-      currentUser: null,
-    };
-  }
-
   // we should unsubscribe for reasons
   unsubscribeFromAuth = null;
 
@@ -23,6 +17,8 @@ class App extends React.Component {
   // when component mounts we tell auth what it should do whenever the firebases state changes.
   //user authenticated session persistance
   componentDidMount() {
+    const { setCurrentUser } = this.props;
+
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
@@ -32,15 +28,13 @@ class App extends React.Component {
         //so were getting displayname, email etc
 
         userRef.onSnapshot((snapShot) => {
-          this.setState({
-            currentUser: {
-              id: snapShot.id,
-              ...snapShot.data(),
-            },
+          setCurrentUser({
+            id: snapShot.id,
+            ...snapShot.data(),
           });
         });
       } else {
-        this.setState({ currentUser: null });
+        setCurrentUser(userAuth);
       }
     });
   }
@@ -53,7 +47,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Header currentUser={this.state.currentUser}></Header>
+        <Header></Header>
         {/* //exact is needed here as home would also render at /hats as it contains
       //'/' //without exact //with switch as soon as one route matches the path,
       //it only renders that route, switch is useful as it gives more control,
@@ -68,4 +62,11 @@ class App extends React.Component {
   }
 }
 
-export default App;
+//so we have dispatch to props and map to props, one here one in header
+
+const mapDispatchToProps = (dispatch) => ({
+  //dispatch is a way for redux to know whatever object you pass is an action object you pass
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(null, mapDispatchToProps)(App);
