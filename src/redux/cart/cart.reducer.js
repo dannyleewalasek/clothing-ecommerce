@@ -1,9 +1,10 @@
 import { addItem } from "./cart.actions";
 import CartActionTypes from "./cart.types";
 import { addItemToCart } from "./cart.utils";
+
 const INITIAL_STATE = {
   hidden: true,
-  cartItems: [], //empty array as default
+  cartItems: [],
 };
 
 const cartReducer = (state = INITIAL_STATE, action) => {

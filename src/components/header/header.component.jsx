@@ -1,17 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
 import CartIcon from "../cart-icon/cart-icon.component";
 
 import CartDropDown from "../cart-dropdown/cart-dropdown.component";
 
 import { ReactComponent as Logo } from "../../assets/crown.svg";
+import { selectCartHidden } from "../../redux/cart/cart.selectors";
+import { selectCurrentUser } from "../../redux/user/user.selectors";
 
 import "./header.styles.scss";
 
 import { auth } from "../../firebase/firebase.utils";
 
-const Header = ({ currentUser, hidden }) => (
+const Header = (props) => (
   <div className="header">
     <Link className="logo-container" to="/">
       <Logo className="logo"></Logo>
@@ -23,8 +26,7 @@ const Header = ({ currentUser, hidden }) => (
       <Link className="option" to="/shop">
         Contact
       </Link>
-      {console.log(currentUser)}
-      {currentUser ? (
+      {props.currentUser ? (
         <div className="option" onClick={() => auth.signOut()}>
           SIGN OUT
         </div>
@@ -34,15 +36,16 @@ const Header = ({ currentUser, hidden }) => (
         </Link>
       )}
       <CartIcon></CartIcon>
-      {hidden ? null : <CartDropDown></CartDropDown>}
     </div>
+    {(console.log(props), props.hidden ? null : <CartDropDown></CartDropDown>)}
   </div>
 );
 
-//destructuring nested, want the current value off the user which is off the styate
-const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
-  currentUser,
-  hidden,
+//destructuring nested, want the current value off the user which is off the <styate />
+//usecreate structured selector to combine selectors, dont need to pass in state, it does this
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser,
+  hidden: selectCartHidden,
 });
 
 export default connect(mapStateToProps)(Header);
