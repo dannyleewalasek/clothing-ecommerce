@@ -1,30 +1,20 @@
 import React from "react";
-import SHOP_DATA from "./shop.data.js";
+import { Route } from "react-router-dom";
+import CollectionPage from "../category/collection.component";
 
-import PreviewCollection from "../../components/preview-collection/preview-collection.component.jsx";
+import CollectionsOverview from "../../components/collections-overview/collections-overview.component";
 
-class ShopPage extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      collections: SHOP_DATA,
-    };
-  }
-
-  render() {
-    const { collections } = this.state;
-    return (
-      <div className="shop-page">
-        {collections.map(({ id, ...otherCollectionProps }) => (
-          <PreviewCollection
-            key={id}
-            {...otherCollectionProps}
-          ></PreviewCollection>
-        ))}
-      </div>
-    );
-  }
-}
+//anything nested in route, which this is from app.js, gets access to match
+const ShopPage = ({ match }) => (
+  <div className="shop-page">
+    {/* using match.path instead of /shop makes this more reusable, dont have to worry where it actually is */}
+    <Route exact path={`${match.path}`} component={CollectionsOverview} />
+    {/* //this gives categoryId as a param in match inside the categorypage */}
+    <Route
+      path={`${match.path}/:collectionId`}
+      component={CollectionPage}
+    ></Route>
+  </div>
+);
 
 export default ShopPage;
