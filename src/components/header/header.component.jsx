@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import CartIcon from "../cart-icon/cart-icon.component";
@@ -10,35 +9,36 @@ import { ReactComponent as Logo } from "../../assets/crown.svg";
 import { selectCartHidden } from "../../redux/cart/cart.selectors";
 import { selectCurrentUser } from "../../redux/user/user.selectors";
 
-import "./header.styles.scss";
+// import "./header.styles.scss";//no longer used as using styled components
+import {
+  HeaderContainer,
+  LogoContainer,
+  OptionsContainer,
+  OptionLink,
+} from "./header.styles";
 
 import { auth } from "../../firebase/firebase.utils";
 
 const Header = (props) => (
-  <div className="header">
-    <Link className="logo-container" to="/">
+  <HeaderContainer>
+    <LogoContainer to="/">
       <Logo className="logo"></Logo>
-    </Link>
-    <div className="options">
-      <Link className="option" to="/shop">
-        Shop
-      </Link>
-      <Link className="option" to="/shop">
-        Contact
-      </Link>
+    </LogoContainer>
+    <OptionsContainer>
+      <OptionLink to="/shop">Shop</OptionLink>
+      <OptionLink to="/shop">Contact</OptionLink>
       {props.currentUser ? (
-        <div className="option" onClick={() => auth.signOut()}>
+        //using as here to change the styled component to be a div instead of 'Link'
+        <OptionLink as="div" onClick={() => auth.signOut()}>
           SIGN OUT
-        </div>
+        </OptionLink>
       ) : (
-        <Link className="option" to="/signin">
-          SIGN IN
-        </Link>
+        <OptionLink to="/signin">SIGN IN</OptionLink>
       )}
       <CartIcon></CartIcon>
-    </div>
-    {(console.log(props), props.hidden ? null : <CartDropDown></CartDropDown>)}
-  </div>
+    </OptionsContainer>
+    {props.hidden ? null : <CartDropDown></CartDropDown>}
+  </HeaderContainer>
 );
 
 //destructuring nested, want the current value off the user which is off the <styate />

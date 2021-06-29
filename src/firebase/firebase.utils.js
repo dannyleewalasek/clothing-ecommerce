@@ -12,6 +12,8 @@ const config = {
   measurementId: "G-ZM2GQ36N0F",
 };
 
+firebase.initializeApp(config);
+
 export const createUserProfileDocument = async (userAuth, additional) => {
   if (!userAuth) return;
 
@@ -39,7 +41,41 @@ export const createUserProfileDocument = async (userAuth, additional) => {
   return userRef;
 };
 
-firebase.initializeApp(config);
+//add collection to the fire store
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey); // returns the ref we need to point somewhere to add data
+  // we have to set 1 item at a time
+  // need to make sure code is predictable, if anything fails, the whole thing must fail. so we do a "batch write"
+
+  const batch = firestore.batch();
+  objectsToAdd.forEach((object) => {
+    const newDocRef = collectionRef.doc(); //this means give me a new document reference in this collection, and randomly generate me a unique ID
+    batch.set(newDocRef, object); //would just do newdocref.set if wasnt batching
+  });
+
+  return await batch.commit(); //a promise is returned
+};
+
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollection = collections.docs.map((doc) => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()), //converts to url readable
+      id: doc.id,
+      title,
+      items,
+    };
+  });
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
+};
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
